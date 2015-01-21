@@ -1,0 +1,269 @@
+
+https://10.11.12.13/geonetwork/srv/eng/xml.search.imos?fast=index
+
+----
+
+Get thesaurus list	http://10.11.12.13/geonetwork/srv/en/xml.thesaurus.getList
+
+wget --no-check-certificate  'http://10.11.12.13/geonetwork/srv/en/xml.thesaurus.getList' -O - 2> /dev/null
+
+
+-- works!! 
+
+wget --no-check-certificate  'http://10.11.12.13/geonetwork/srv/en/xml.search.keywordlink?request=broader&thesaurus=external.theme.parameterClassificationScheme&id=http://vocab.nerc.ac.uk/collection/P01/current/PSLTZZ01' -O - 2> /dev/null
+
+
+http://10.11.12.13/geonetwork/srv/en/xml.search.keywordlink?request=broader&thesaurus=external.theme.parameterClassificationScheme&id=http://vocab.nerc.ac.uk/collection/P01/current/PSLTZZ01 
+
+---
+
+
+https://10.11.12.13/geonetwork/srv/eng/xml.user.metadata
+
+seems to list all metadata records - and could perhaps be used. 
+
+
+----
+
+list of all uuids (using search)
+    list of all parameters in uuid (very similar to existing page)
+        formated landing page
+
+---
+
+parameter.
+https://10.11.12.13/geonetwork/srv/eng/metadata.formatter.html?uuid=4402cb50-e20a-44ee-93e6-4728259250d2&xsl=view14&paramIndex=3
+
+-- show metadata record
+https://10.11.12.13/geonetwork/srv/eng/metadata.edit?uuid=4402cb50-e20a-44ee-93e6-4728259250d2
+
+
+
+
+1. So one of the tasks I worked on was to develop SEO pages, from geonetwork metadata and descriptive terms.  
+2. working with john cuthbertson
+
+- show the marked up water-bodies and land-masses in argo metadata
+- then show the style sheet.  
+- maybe show file output.
+
+Issues
+
+- one to many relationship between metadata record and views - means need parametization. 
+- long lists water-bodies and land-masses means changes from original templates. eg. can't fit original files on filesystem.
+- only for an example argo only - need to get all geonetwork records updated 
+- index pages - one long list, or a tree - never discussed. Only looked at the pages - not how to Have generated
+- trying to find a webservice that could generate the the image. looked at geoserver, google maps, open layers - only one is google static maps api.
+	it has it's geometry form (markup not WKT, GML, KML) - issue of url length, and holes in geometry. 
+- parametization of the stylesheet, needed to change the formatter service to expose url parameters to the stylesheet transform.  
+- url rewrite (should be simple)
+
+-
+
+---
+
+Think this is the code, 
+./web/src/main/java/org/fao/geonet/services/metadata/format/Format.java
+
+There's another transform method that takes params,
+
+vim ./jeeves/src/main/java/jeeves/utils/Xml.java
+
+ 396      * @throws Exception
+ 397      */
+ 398     public static Element transform(Element xml, String styleSheetPath, Map<String,String> params) throws Exception
+ 399     {
+ 400         JDOMResult resXml = new JDOMResult();
+ 401         transform(xml, styleSheetPath, resXml, params);
+ 402         return (Element)resXml.getDocument().getRootElement().detach();
+ 403     }
+ 4
+
+----
+
+https://10.11.12.13/geonetwork/srv/eng/metadata.formatter.html?id=21810&xsl=view
+
+https://10.11.12.13/geonetwork/srv/eng/metadata.formatter.html?id=21810&xsl=view15
+
+https://10.11.12.13/geonetwork/srv/eng/metadata.formatter.xml?uuid=4402cb50-e20a-44ee-93e6-4728259250d2&xslid=view15
+
+-----
+
+
+
+Discussion 2009, where not possible, to deal with holes.
+
+https://groups.google.com/forum/#!topic/google-maps-api/FCeBF21cBr0
+
+
+
+Geoserver base map
+http://geoserver-static-11-nsp-mel.aodn.org.au/geoserver/baselayers/wms?service=WMS&version=1.1.0&request=GetMap&layers=default_basemap_simple&styles=&bbox=0,-90.0,180.0,90.0&width=300&height=300&srs=EPSG:4326&format=image%2Fjpeg
+
+DEVELOPER GUIDE
+https://developers.google.com/maps/documentation/staticmaps/
+
+VERY NICE
+https://maps.googleapis.com/maps/api/staticmap?center=hobart,tasmania&zoom=13&size=600x300&maptype=roadmap&markers=color:blue|label:S|40.702147,-74.015794&markers=color:green|label:G|40.711614,-74.012318&markers=color:red|label:C|40.718217,-73.998284
+
+WORKS
+http://maps.googleapis.com/maps/api/staticmap?center=33.402285,-111.942715&zoom=20&size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3awhite|33.4022475,-111.9426775|33.4022475,-111.9427525|33.4023225,-111.9427525|33.4023225,-111.9426775|33.4022475,-111.9426775
+
+
+http://maps.googleapis.com/maps/api/staticmap?center=33.402285,-111.942715&zoom=20&size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3awhite|33,-111|33,-111|33,-111|33,-111|33,-111
+
+VERY GOOD triangle
+http://maps.googleapis.com/maps/api/staticmap?center=33.402285,-111.942715&zoom=1&size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3awhite|30,-100|30,-121|40,-111|40,-111|30,-100
+http://maps.googleapis.com/maps/api/staticmap?center=33.402285,-111.942715&zoom=1&size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3awhite|30,-100|30,-121|40,-121|40,-111|30,-100
+
+----
+
+http://geoserver-static-11-nsp-mel.aodn.org.au/geoserver/baselayers/wms?service=WMS&version=1.1.0&request=GetMap&layers=default_basemap_simple&styles=&bbox=-180.0,-90.0,180.0,90.0&width=200&height=100&srs=EPSG:4326&format=image%2Fjpeg
+
+
+153 -28 153 -27 156 -27 156 -28 153 -28
+
+|-28,153|-27,153|-27,156|-28,156|-28,153 
+
+
+http://maps.googleapis.com/maps/api/staticmap?center=33.402285,-111.942715&zoom=1&size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3awhite|-28,153|-27,153|-27,156|-28,156|-28,153
+
+http://maps.googleapis.com/maps/api/staticmap?center=-20,160&zoom=3.5&size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3awhite|-28,153|-27,153|-27,156|-28,156|-28,153
+
+without zoom, or center - it automatically centers
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3awhite|-28,153|-27,153|-27,156|-28,156|-28,153
+
+# with correct color
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3aorange|-28,153|-27,153|-27,156|-28,156|-28,153
+
+
+# this works best- two polygons - and positions in center, but draws connecting line
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3aorange|-28,153|-27,153|-27,156|-28,156|-28,153|-10,127|-8,127|-8,128|-10,128|-10,127
+
+
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3aorange|-28,153|-27,153|-27,156|-28,156|-28,153|&path=color%3ared|weight:1|fillcolor%3aorange|-10,127|-8,127|-8,128|-10,128|-10,127
+
+
+
+EXAMPLE in JS with google maps which is pretty simple
+http://jsfiddle.net/ajzX4/178/
+
+
+
+<gml:posList srsDimension="2">127 -10 127 -8 128 -8 128 -10 127 -10</gml:posList>
+
+
+-10,127|-8,127|-8,128|-10,128|-10,127
+
+
+Static Map URLs are restricted to 2048 characters in size
+
+
+WORKS!!!
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=satellite&sensor=false&path=color%3ared|weight:1|fillcolor%3aorange|-28,153|-27,153|-27,156|-28,156|-28,153&path=color%3ared|weight:1|fillcolor%3aorange|-10,127|-8,127|-8,128|-10,128|-10,127
+
+no sensor
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=satellite&path=color%3ared|weight:1|fillcolor%3aorange|-28,153|-27,153|-27,156|-28,156|-28,153&path=color%3ared|weight:1|fillcolor%3aorange|-10,127|-8,127|-8,128|-10,128|-10,127
+
+terrain
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=terrain&path=color%3ared|weight:1|fillcolor%3aorange|-28,153|-27,153|-27,156|-28,156|-28,153&path=color%3ared|weight:1|fillcolor%3aorange|-10,127|-8,127|-8,128|-10,128|-10,127
+
+hybrid
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=hybrid&path=color%3ared|weight:1|fillcolor%3aorange|-28,153|-27,153|-27,156|-28,156|-28,153&path=color%3ared|weight:1|fillcolor%3aorange|-10,127|-8,127|-8,128|-10,128|-10,127
+
+with a marker
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=hybrid&path=color%3ared|weight:1|fillcolor%3aorange|-28,153|-27,153|-27,156|-28,156|-28,153&path=color%3ared|weight:1|fillcolor%3aorange|-10,127|-8,127|-8,128|-10,128|-10,127&markers=color:blue|label:W|-10,127
+
+
+
+Without FILL. will handle holes.
+http://maps.googleapis.com/maps/api/staticmap?size=600x600&maptype=hybrid&path=color%3aorange|weight:6|-28,153|-27,153|-27,156|-28,156|-28,153&path=color%3aorange|weight:6|-10,127|-8,127|-8,128|-10,128|-10,127
+
+
+http://maps.googleapis.com/maps/api/staticmap?size=300x300&maptype=satellite&path=color%3aorange|weight:3|-28,153|-27,153|-27,156|-28,156|-28,153&path=color%3aorange|weight:3|-10,127|-8,127|-8,128|-10,128|-10,127
+
+&amp;
+http://maps.googleapis.com/maps/api/staticmap?size=300x300&amp;maptype=satellite&amp;path=color%3aorange|weight:3|-28,153|-27,153|-27,156|-28,156|-28,153&amp;path=color%3aorange|weight:3|-10,127|-8,127|-8,128|-10,128|-10,127
+
+%26
+http://maps.googleapis.com/maps/api/staticmap?size=300x300%26maptype=satellite%26path=color%3aorange|weight:3|-28,153|-27,153|-27,156|-28,156|-28,153%26path=color%3aorange|weight:3|-10,127|-8,127|-8,128|-10,128|-10,127
+
+
+
+<!-- Ok, think we should perhaps be gathering up variables --> 
+
+- there's two sets of gmd:descriptiveKeywords
+
+xpath -e '//mcp:parameterName/mcp:DP_Term/mcp:term/gco:CharacterString/text()' argo_profiles.xml
+
+
+xpath -e '//gmd:descriptiveKeywords' argo_profiles.xml 2>&1 | less
+
+
+- see how we can hit things, using '//' in the middle of an expression 
+
+xpath -e '//gmd:thesaurusName//gmx:Anchor' argo_profiles_with_water_bodies.mcp  2>&1 | less
+xpath -e '//gmd:thesaurusName//gmx:Anchor/text()' argo_profiles_with_water_bodies.mcp
+
+
+---
+(0) how to manage the water bodies  and land mass information collected by Natalia. 
+	- encode it up as another xml dependency.
+	- marked up some dummy records - for proof of concept purposes.
+
+
+Way to output multiple files - eg for generating static.
+http://www.xml.com/pub/a/2002/04/10/xslt2.html
+
+
+TWO ISSUES
+
+
+(1) issue that there's no one-to-one correspondance between collection record and the views because
+each collection has multiple parameters.
+	- therefore need to make it parametezied (whether static or dynamic)
+
+
+
+---
+(2) issue that the water bodies, and land masses exist as a spread sheet, and are not 
+
+1. add region (water bodies, land masses) as a keyword associated with each metadata record.
+2. change indexing, so that these are added as region s added as an index
+3. then use the search api, to get data, rather than the metadata record. 
+
+This data should be placed in/associated with record in some way, rather remain for 
+us to have to manage. 
+
+
+alternatively parse it out of the keywords with xpath in some way
+
+-----
+
+https://catalogue-123.aodn.org.au/geonetwork/srv/eng/xml.search.imos?fast=index
+
+hits lucene - and gives the parameter names, keywords platforms etc. 
+
+
+
+
+
+
+<!-- eg. xsltproc  view.xsl  formatter-input.xml --> 
+
+                <mcp:parameterName>
+                  <mcp:DP_Term>
+                    <mcp:term>
+                      <gco:CharacterString>Temperature of the water body</gco:CharacterString>
+
+----
+        <mcp:dataParameters>
+          <mcp:DP_DataParameters>
+            <mcp:dataParameter>
+              <mcp:DP_DataParameter>
+                <mcp:parameterName>
+
+
+     mcp:dataParameters/mcp:DP_DataParameters/mcp:dataParameter/mcp:DP_DataParameter/mcp:parameterName
+
+
