@@ -292,9 +292,27 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
     </html>
   </xsl:template>
 
+  <!-- The XML site map. -->
+  <xsl:template name="xml-sitemap-index-view">
+    <xsl:param name="processedNodes" as="document-node()"/>
 
-  <!-- The index view -->
-  <xsl:template name="index-view">
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+      <url>
+        <loc><xsl:value-of select="concat($portalSearchIndexBaseUrl, '/', 'data_collections.html')"/></loc>
+      </url>
+
+      <xsl:for-each select="$processedNodes/node">
+        <xsl:variable name="filename" select="filename"/>
+        <url>
+          <loc><xsl:value-of select="concat($portalSearchIndexBaseUrl, '/', $filename)"/></loc>
+        </url>
+      </xsl:for-each>
+    </urlset>
+  </xsl:template>
+
+  <!-- The HTML index view -->
+  <xsl:template name="html-index-view">
     <xsl:param name="processedNodes" as="document-node()" />
     <xsl:param name="detail" as="document-node()" />
 
@@ -606,24 +624,30 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
     </xsl:variable>
 
 
-    <!-- record views -->
+    <!-- record views, i.e. an HTML page per metadata record. -->
     <xsl:for-each select="$processedNodes/node" >
       <xsl:variable name="filename" select="filename"/>
       <xsl:result-document method="html" indent="yes" href="output/{ $filename}">
         <xsl:call-template name="record-view">
           <xsl:with-param name="node" select="." />
           <xsl:with-param name="detail" select="$detail" />
-          <!-- xsl:with-param name="detail" select="$detail"/ -->
         </xsl:call-template>
       </xsl:result-document>
     </xsl:for-each>
 
 
-    <!-- index view -->
+    <!-- HTML index view -->
     <xsl:result-document method="html" indent="yes" href="output/data_collections.html">
-      <xsl:call-template name="index-view">
+      <xsl:call-template name="html-index-view">
         <xsl:with-param name="processedNodes" select="$processedNodes"/>
         <xsl:with-param name="detail" select="$detail" />
+      </xsl:call-template>
+    </xsl:result-document>
+
+    <!-- XML sitemap -->
+    <xsl:result-document method="xml" indent="yes" href="output/sitemap_index.xml">
+      <xsl:call-template name="xml-sitemap-index-view">
+        <xsl:with-param name="processedNodes" select="$processedNodes"/>
       </xsl:call-template>
     </xsl:result-document>
 
