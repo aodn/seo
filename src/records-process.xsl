@@ -12,9 +12,7 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
 >
 
   <!-- Configuration -->
-  <!-- <xsl:variable name="maxRecords"           select="1000"/> --> <!-- Useful to limit when testing. Careful, includes register records -->
-  <xsl:variable name="maxRecords"
-                select="7"/>
+  <xsl:variable name="maxRecords"           select="1000"/> <!-- Useful to limit when testing. Careful, includes register records -->
 
   <xsl:variable name="geonetworkBaseUrl"
                 select="'https://catalogue-123.aodn.org.au'"/>
@@ -300,15 +298,24 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
 
       <url>
         <loc><xsl:value-of select="concat($portalSearchIndexBaseUrl, '/', 'data_collections.html')"/></loc>
+        <lastmod><xsl:value-of select="current-dateTime()"/></lastmod>
+        <changefreq>daily</changefreq>
       </url>
 
       <xsl:for-each select="$processedNodes/node">
+
+        <xsl:variable name="changeDate" select="changeDate"/>
         <xsl:variable name="filename" select="filename"/>
+
         <url>
           <loc><xsl:value-of select="concat($portalSearchIndexBaseUrl, '/', $filename)"/></loc>
+          <lastmod><xsl:value-of select="$changeDate"/></lastmod>
+          <changefreq>daily</changefreq>
         </url>
+
       </xsl:for-each>
     </urlset>
+
   </xsl:template>
 
   <!-- The HTML index view -->
@@ -426,6 +433,8 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
   <xsl:template match="mcp:MD_Metadata">
 
     <xsl:variable name="uuid" select="gmd:fileIdentifier/gco:CharacterString"/>
+
+    <xsl:variable name="changeDate" select="gmd:dateStamp/gco:DateTime"/>
 
     <!-- Data identification is a common root and should be factored -->
     <xsl:variable name="waterBodies" select="gmd:identificationInfo/mcp:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:thesaurusName//gmx:Anchor[text() = 'geonetwork.thesaurus.local.theme.water-bodies' ]/ancestor::gmd:MD_Keywords/gmd:keyword/gco:CharacterString" />
@@ -566,6 +575,7 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
       <xsl:value-of select="encode-for-uri(replace( normalize-space( $filename), ' ', '-'))"/>
     </xsl:element>
     <xsl:element name="uuid"> <xsl:value-of select="$uuid"/> </xsl:element>
+    <xsl:element name="changeDate"> <xsl:value-of select="$changeDate"/> </xsl:element>
     <xsl:element name="organisation"> <xsl:value-of select="$organisation"/> </xsl:element>
     <xsl:element name="title"> <xsl:value-of select="$title"/> </xsl:element>
     <xsl:element name="abstract"> <xsl:value-of select="$abstract"/> </xsl:element>
