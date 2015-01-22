@@ -1,60 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet version="2.0"
-  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:mcp="http://schemas.aodn.org.au/mcp-2.0"
-  xmlns:gco="http://www.isotc211.org/2005/gco"
-  xmlns:gmd="http://www.isotc211.org/2005/gmd"
-  xmlns:gmx="http://www.isotc211.org/2005/gmx"
-  xmlns:geonet="http://www.fao.org/geonetwork"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:mcp="http://schemas.aodn.org.au/mcp-2.0"
+                xmlns:gco="http://www.isotc211.org/2005/gco"
+                xmlns:gmd="http://www.isotc211.org/2005/gmd"
+                xmlns:gmx="http://www.isotc211.org/2005/gmx"
+                xmlns:geonet="http://www.fao.org/geonetwork"
 
-  exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
+exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
 >
 
   <!-- Configuration -->
-  <xsl:variable name="maxRecords"         select="1000"/> <!-- Useful to limit when testing. Careful, includes register records -->
-  <!--xsl:variable name="maxRecords"         select="7"/--> 
+  <xsl:variable name="maxRecords"
+                select="10"/> <!-- Useful to limit when testing. Careful, includes register records -->
+  <xsl:variable name="geonetworkBaseUrl"
+                select="'https://catalogue-123.aodn.org.au'"/>
+  <xsl:variable name="portalDataBaseUrl"
+                select="'https://imos.aodn.org.au/imos123/home'"/>
 
-  <xsl:variable name="geonetworkBaseUrl"  select="'https://catalogue-123.aodn.org.au'"/>
-  <xsl:variable name="portalDataBaseUrl"  select="'https://imos.aodn.org.au/imos123/home'"/>
-
-  <xsl:variable name="imosLogoUrl"        select="'http://static.emii.org.au/images/logo/IMOS-Ocean-Portal-logo.png'"/>
-  <xsl:variable name="emiiInfoUrl"        select="'mailto:info@emii.org.au'"/>
-  <xsl:variable name="emiiTermsUrl"       select="'http://imos.org.au/imostermsofuse0.html'"/>
-  <xsl:variable name="portalUrl"          select="'https://imos.aodn.org.au/imos123'"/>
+  <xsl:variable name="imosLogoUrl"
+                select="'http://static.emii.org.au/images/logo/IMOS-Ocean-Portal-logo.png'"/>
+  <xsl:variable name="emiiInfoUrl"
+                select="'mailt:info@emii.org.au'"/>
+  <xsl:variable name="emiiTermsUrl"
+                select="'http://imos.org.au/imostermsofuse0.html'"/>
+  <xsl:variable name="portalUrl"
+                select="'https://imos.aodn.org.au/imos123'"/>
+  <xsl:variable name="portalSearchIndexBaseUrl"
+                select="'https://imos.aodn.org.au'"/>
 
   <xsl:variable name="gaScript">
     <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
-        ga('create', 'UA-54091417-1', 'auto');
-        ga('require', 'displayfeatures');
-        ga('send', 'pageview');
+      ga('create', 'UA-54091417-1', 'auto');
+      ga('require', 'displayfeatures');
+      ga('send', 'pageview');
     </script>
   </xsl:variable>
 
 
 
   <!-- Translate newlines to HTML BR Tags
-  http://stackoverflow.org/wiki/Translate_newlines_to_HTML_BR_Tags
+       http://stackoverflow.org/wiki/Translate_newlines_to_HTML_BR_Tags
   -->
   <xsl:template name="replace">
-      <xsl:param name="string"/>
-      <xsl:choose>
-          <xsl:when test="contains($string,'&#10;')">
-              <xsl:value-of select="substring-before($string,'&#10;')"/>
-              <br/>
-              <xsl:call-template name="replace">
-                  <xsl:with-param name="string" select="substring-after($string,'&#10;')"/>
-              </xsl:call-template>
-          </xsl:when>
-          <xsl:otherwise>
-              <xsl:value-of select="$string"/>
-          </xsl:otherwise>
-      </xsl:choose>
+    <xsl:param name="string"/>
+    <xsl:choose>
+      <xsl:when test="contains($string,'&#10;')">
+        <xsl:value-of select="substring-before($string,'&#10;')"/>
+        <br/>
+        <xsl:call-template name="replace">
+          <xsl:with-param name="string" select="substring-after($string,'&#10;')"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$string"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 
 
@@ -66,18 +73,18 @@
 
     <!-- put here rather than intermediate model, because it's more formatting -->
     <xsl:variable name="gaTag">
-        <xsl:value-of select="$node/uniqueParameters/broader" separator=", "/>     
-        <xsl:text> | </xsl:text>
-        <xsl:value-of select="$node/title"/>     
+      <xsl:value-of select="$node/uniqueParameters/broader" separator=", "/>
+      <xsl:text> | </xsl:text>
+      <xsl:value-of select="$node/title"/>
     </xsl:variable>
 
-  
+
     <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
     <xsl:text>&#xa;</xsl:text>
 
     <html>
       <head>
-    
+
         <!-- Latest compiled and minified Bootstrap CSS -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="imos.css" />
@@ -125,7 +132,7 @@
 
         <div class="imosHeader">
           <div class="container">
-            <a>  
+            <a>
               <xsl:attribute name="class">
                 <xsl:text>btn</xsl:text>
               </xsl:attribute>
@@ -137,8 +144,8 @@
               </xsl:attribute>
               <xsl:attribute name="onclick">ga('send', 'event', 'Landing Page',  'Logo Image', '<xsl:value-of select="$gaTag"/>')</xsl:attribute>
               <img>
-                <xsl:attribute name="src"> 
-                  <xsl:value-of select="$detail/imosLogoUrl"/> 
+                <xsl:attribute name="src">
+                  <xsl:value-of select="$detail/imosLogoUrl"/>
                 </xsl:attribute>
                 <xsl:attribute name="alt">
                   <xsl:text>IMOS logo</xsl:text>
@@ -155,7 +162,7 @@
               <xsl:value-of select="$node/uniqueParameters/broader" separator=", "/>
               <xsl:text> | Oceans Seas Atmosphere</xsl:text>
             </h1>
-    
+
             <h2>
               <xsl:value-of select="$node/waterBodiesTidied/water-body" separator=", "/>
             </h2>
@@ -195,7 +202,7 @@
               </h2>
 
               <div>
-          
+
                 <xsl:element name="a">
                   <xsl:attribute name="href">
                     <xsl:value-of select="$node/portalDataUrl"/>
@@ -216,7 +223,7 @@
             </div> <!-- col -->
 
             <div class="col-md-8">
-   
+
               <div>
                 <xsl:element name="a">
 
@@ -253,27 +260,27 @@
           <div class="container">
             <footer class="row">
               <div class="col-md-4">
-                  <p>If you've found this information useful, see something wrong, or have a suggestion, please let us
-                      know.
-                      All feedback is very welcome. For help and information about this site
-                      please contact <xsl:element name="a">
-                        <xsl:attribute name="href">
-                          <xsl:value-of select="$detail/emiiInfoUrl"/>
-                        </xsl:attribute>
-                        <!-- eg. strip mailto: prefix-->
-                        <xsl:value-of select="replace( $detail/emiiInfoUrl, '.*:(.*)', '$1' )"/>
-                      </xsl:element>
-                  </p>
+                <p>If you've found this information useful, see something wrong, or have a suggestion, please let us
+                know.
+                All feedback is very welcome. For help and information about this site
+                please contact <xsl:element name="a">
+                <xsl:attribute name="href">
+                  <xsl:value-of select="$detail/emiiInfoUrl"/>
+                </xsl:attribute>
+                <!-- eg. strip mailto: prefix-->
+                <xsl:value-of select="replace( $detail/emiiInfoUrl, '.*:(.*)', '$1' )"/>
+              </xsl:element>
+                </p>
               </div>
               <div class="col-md-8">
-                  <p>Use of this web site and information available from it is subject to our <xsl:element name="a">
-                      <xsl:attribute name="href">
-                        <xsl:value-of select="$detail/emiiTermsUrl"/>
-                      </xsl:attribute>
-                      Conditions of use
-                    </xsl:element>
-                  </p>
-                  <p>&#169; 2014 IMOS</p>
+                <p>Use of this web site and information available from it is subject to our <xsl:element name="a">
+                <xsl:attribute name="href">
+                  <xsl:value-of select="$detail/emiiTermsUrl"/>
+                </xsl:attribute>
+                Conditions of use
+              </xsl:element>
+                </p>
+                <p>&#169; 2014 IMOS</p>
               </div>
             </footer>
           </div>
@@ -283,12 +290,39 @@
     </html>
   </xsl:template>
 
+  <!-- The XML site map. -->
+  <xsl:template name="xml-sitemap-index-view">
+    <xsl:param name="processedNodes" as="document-node()"/>
 
-  <!-- The index view -->
-  <xsl:template name="index-view">
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+      <url>
+        <loc><xsl:value-of select="concat($portalSearchIndexBaseUrl, '/', 'data_collections.html')"/></loc>
+        <lastmod><xsl:value-of select="current-dateTime()"/></lastmod>
+        <changefreq>daily</changefreq>
+      </url>
+
+      <xsl:for-each select="$processedNodes/node">
+
+        <xsl:variable name="changeDate" select="changeDate"/>
+        <xsl:variable name="filename" select="filename"/>
+
+        <url>
+          <loc><xsl:value-of select="concat($portalSearchIndexBaseUrl, '/', $filename)"/></loc>
+          <lastmod><xsl:value-of select="$changeDate"/></lastmod>
+          <changefreq>daily</changefreq>
+        </url>
+
+      </xsl:for-each>
+    </urlset>
+
+  </xsl:template>
+
+  <!-- The HTML index view -->
+  <xsl:template name="html-index-view">
     <xsl:param name="processedNodes" as="document-node()" />
     <xsl:param name="detail" as="document-node()" />
- 
+
     <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html></xsl:text>
     <xsl:text>&#xa;</xsl:text>
     <html>
@@ -314,7 +348,7 @@
 
         <div class="imosHeader">
           <div class="container">
-            <a>  
+            <a>
               <xsl:attribute name="class">
                 <xsl:text>btn</xsl:text>
               </xsl:attribute>
@@ -325,9 +359,9 @@
                 <xsl:value-of select="$detail/portalUrl"/>
               </xsl:attribute>
               <img>
-                <xsl:attribute name="src"> 
+                <xsl:attribute name="src">
                   <!-- differs from record view -->
-                  <xsl:value-of select="$detail/imosLogoUrl"/> 
+                  <xsl:value-of select="$detail/imosLogoUrl"/>
                 </xsl:attribute>
                 <xsl:attribute name="alt">
                   <xsl:text>IMOS logo</xsl:text>
@@ -343,47 +377,47 @@
             <xsl:variable name="filename" select="filename"/>
             <div>
               <h3>
-              <xsl:element name="a">
-                <xsl:attribute name="href">
-                  <xsl:value-of select="$filename"/>
-                </xsl:attribute>
+                <xsl:element name="a">
+                  <xsl:attribute name="href">
+                    <xsl:value-of select="$filename"/>
+                  </xsl:attribute>
 
-                <xsl:value-of select="uniqueParameters/broader" separator=", "/>
-                <xsl:text> | </xsl:text>
-                <xsl:value-of select="title"/>
-              </xsl:element>
+                  <xsl:value-of select="uniqueParameters/broader" separator=", "/>
+                  <xsl:text> | </xsl:text>
+                  <xsl:value-of select="title"/>
+                </xsl:element>
               </h3>
             </div>
 
-           </xsl:for-each>
+          </xsl:for-each>
         </div>
-  
+
         <!-- this is repeated in record view and should perhaps be factored -->
         <div class="jumbotronFooter voffset5">
           <div class="container">
             <footer class="row">
               <div class="col-md-4">
-                  <p>If you've found this information useful, see something wrong, or have a suggestion, please let us
-                      know.
-                      All feedback is very welcome. For help and information about this site
-                      please contact <xsl:element name="a">
-                        <xsl:attribute name="href">
-                          <xsl:value-of select="$detail/emiiInfoUrl"/>
-                        </xsl:attribute>
-                        <!-- eg. strip mailto: prefix-->
-                        <xsl:value-of select="replace( $detail/emiiInfoUrl, '.*:(.*)', '$1' )"/>
-                      </xsl:element>
-                  </p>
+                <p>If you've found this information useful, see something wrong, or have a suggestion, please let us
+                know.
+                All feedback is very welcome. For help and information about this site
+                please contact <xsl:element name="a">
+                <xsl:attribute name="href">
+                  <xsl:value-of select="$detail/emiiInfoUrl"/>
+                </xsl:attribute>
+                <!-- eg. strip mailto: prefix-->
+                <xsl:value-of select="replace( $detail/emiiInfoUrl, '.*:(.*)', '$1' )"/>
+              </xsl:element>
+                </p>
               </div>
               <div class="col-md-8">
-                  <p>Use of this web site and information available from it is subject to our <xsl:element name="a">
-                      <xsl:attribute name="href">
-                        <xsl:value-of select="$detail/emiiTermsUrl"/>
-                      </xsl:attribute>
-                      Conditions of use
-                    </xsl:element>
-                  </p>
-                  <p>&#169; 2014 IMOS</p>
+                <p>Use of this web site and information available from it is subject to our <xsl:element name="a">
+                <xsl:attribute name="href">
+                  <xsl:value-of select="$detail/emiiTermsUrl"/>
+                </xsl:attribute>
+                Conditions of use
+              </xsl:element>
+                </p>
+                <p>&#169; 2014 IMOS</p>
               </div>
             </footer>
           </div>
@@ -400,9 +434,11 @@
 
     <xsl:variable name="uuid" select="gmd:fileIdentifier/gco:CharacterString"/>
 
+    <xsl:variable name="changeDate" select="gmd:dateStamp/gco:DateTime"/>
+
     <!-- Data identification is a common root and should be factored -->
     <xsl:variable name="waterBodies" select="gmd:identificationInfo/mcp:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:thesaurusName//gmx:Anchor[text() = 'geonetwork.thesaurus.local.theme.water-bodies' ]/ancestor::gmd:MD_Keywords/gmd:keyword/gco:CharacterString" />
-/va
+    /va
     <xsl:variable name="landMasses" select="gmd:identificationInfo/mcp:MD_DataIdentification/gmd:descriptiveKeywords/gmd:MD_Keywords/gmd:thesaurusName//gmx:Anchor[text() = 'geonetwork.thesaurus.local.theme.land-masses' ]/ancestor::gmd:MD_Keywords/gmd:keyword/gco:CharacterString" />
 
     <xsl:variable name="parameters" select="gmd:identificationInfo/mcp:MD_DataIdentification/mcp:dataParameters/mcp:DP_DataParameters/mcp:dataParameter/mcp:DP_DataParameter" />
@@ -413,37 +449,37 @@
 
     <xsl:variable name="organisation" select="gmd:contact/gmd:CI_ResponsibleParty/gmd:organisationName/gco:CharacterString" />
 
-    <!-- take the right most element of the land mass separated by | 
-      and remove commas
+    <!-- take the right most element of the land mass separated by |
+         and remove commas
     -->
     <xsl:variable name="waterBodiesTidied">
       <xsl:for-each select="$waterBodies">
-          <xsl:element name="water-body">
-            <!--xsl:value-of select="replace(., '.*\|(.*)','$1')"/ -->
-            <xsl:value-of select="replace( replace(., '.*\|(.*)','$1'), ',', '')"/>
-          </xsl:element>
+        <xsl:element name="water-body">
+          <!--xsl:value-of select="replace(., '.*\|(.*)','$1')"/ -->
+          <xsl:value-of select="replace( replace(., '.*\|(.*)','$1'), ',', '')"/>
+        </xsl:element>
       </xsl:for-each>
     </xsl:variable>
 
-    <!-- take the right most element of the water body separated by | 
-      and remove commas
+    <!-- take the right most element of the water body separated by |
+         and remove commas
     -->
     <xsl:variable name="landMassesTidied">
       <xsl:for-each select="$landMasses">
-          <xsl:element name="land-mass">
-            <xsl:value-of select="replace(., '.*\|(.*)','$1')"/>
-          </xsl:element>
+        <xsl:element name="land-mass">
+          <xsl:value-of select="replace(., '.*\|(.*)','$1')"/>
+        </xsl:element>
       </xsl:for-each>
     </xsl:variable>
 
     <!--
-    uuid :        '<xsl:value-of select="$uuid"/>'
-    organisation: '<xsl:value-of select="$organisation"/>'
-    water bodies: '<xsl:value-of select="$waterBodies" separator="', '"/>'
-    water bodies2: '<xsl:value-of select="$waterBodiesTidied/water-body" separator="', '"/>'
-    land masses:  '<xsl:value-of select="$landMasses" separator="', '"/>'
-    land masses2:  '<xsl:value-of select="$landMassesTidied/land-mass" separator="', '"/>'
-    title:        '<xsl:value-of select="$title" />'
+        uuid :        '<xsl:value-of select="$uuid"/>'
+        organisation: '<xsl:value-of select="$organisation"/>'
+        water bodies: '<xsl:value-of select="$waterBodies" separator="', '"/>'
+        water bodies2: '<xsl:value-of select="$waterBodiesTidied/water-body" separator="', '"/>'
+        land masses:  '<xsl:value-of select="$landMasses" separator="', '"/>'
+        land masses2:  '<xsl:value-of select="$landMassesTidied/land-mass" separator="', '"/>'
+        title:        '<xsl:value-of select="$title" />'
     -->
     <!-- abstract:     '<xsl:value-of select="$abstract" />' -->
 
@@ -501,24 +537,24 @@
       </xsl:for-each-group>
     </xsl:variable>
 
-	  <!--
-    <xsl:text>&#xa;      broader      &#xa;</xsl:text>
-    <xsl:value-of select="$parameterList/broader" separator=", "/>
+    <!--
+        <xsl:text>&#xa;      broader      &#xa;</xsl:text>
+        <xsl:value-of select="$parameterList/broader" separator=", "/>
 
-    <xsl:text>&#xa;      longName      &#xa;</xsl:text>
-    <xsl:value-of select="$parameterList/longName" separator=", "/>
+<xsl:text>&#xa;      longName      &#xa;</xsl:text>
+<xsl:value-of select="$parameterList/longName" separator=", "/>
 
-    <xsl:text>&#xa;      platform      &#xa;</xsl:text>
-    <xsl:value-of select="$parameterList/platform" separator=", "/>
+<xsl:text>&#xa;      platform      &#xa;</xsl:text>
+<xsl:value-of select="$parameterList/platform" separator=", "/>
 
-    <xsl:text>&#xa;       uniquePlatforms       &#xa;</xsl:text>
-    <xsl:value-of select="$uniquePlatforms/platform" separator=", "/>
+<xsl:text>&#xa;       uniquePlatforms       &#xa;</xsl:text>
+<xsl:value-of select="$uniquePlatforms/platform" separator=", "/>
 
-    <xsl:text>&#xa;       uniqueParameters      &#xa;</xsl:text>
-    <xsl:value-of select="$uniqueParameters/broader" separator=", "/>
+<xsl:text>&#xa;       uniqueParameters      &#xa;</xsl:text>
+<xsl:value-of select="$uniqueParameters/broader" separator=", "/>
 
-    <xsl:text>&#xa;</xsl:text>
-	  -->
+<xsl:text>&#xa;</xsl:text>
+    -->
 
     <xsl:variable name="filename">
       <xsl:value-of select="$uniqueParameters/broader" separator=" "/>
@@ -535,15 +571,16 @@
     </xsl:variable>
 
     <!-- Create actual elements for the vars -->
-    <xsl:element name="filename"> 
-       <xsl:value-of select="encode-for-uri(replace( normalize-space( $filename), ' ', '-'))"/> 
+    <xsl:element name="filename">
+      <xsl:value-of select="encode-for-uri(replace( normalize-space( $filename), ' ', '-'))"/>
     </xsl:element>
     <xsl:element name="uuid"> <xsl:value-of select="$uuid"/> </xsl:element>
+    <xsl:element name="changeDate"> <xsl:value-of select="$changeDate"/> </xsl:element>
     <xsl:element name="organisation"> <xsl:value-of select="$organisation"/> </xsl:element>
     <xsl:element name="title"> <xsl:value-of select="$title"/> </xsl:element>
     <xsl:element name="abstract"> <xsl:value-of select="$abstract"/> </xsl:element>
     <xsl:element name="portalDataUrl"> <xsl:value-of select="$portalDataUrl"/> </xsl:element>
-    
+
     <xsl:element name="uniquePlatforms"> <xsl:copy-of select="$uniquePlatforms"/> </xsl:element>
     <xsl:element name="uniqueParameters"> <xsl:copy-of select="$uniqueParameters"/> </xsl:element>
     <xsl:element name="landMassesTidied"> <xsl:copy-of select="$landMassesTidied"/> </xsl:element>
@@ -556,7 +593,7 @@
 
 
   <!-- filename generation should be predictable here.
-    so apply templates with param.
+       so apply templates with param.
   -->
 
   <!-- TODO: we shouldn't have to match on a dummy document -->
@@ -578,8 +615,6 @@
 
           <xsl:variable name="uuid" select="geonet:info/uuid"/>
           <xsl:variable name="recordRequest" select="concat($geonetworkBaseUrl, '/geonetwork/srv/eng/xml.metadata.get?uuid=', $uuid)" />
-          <!-- xsl:value-of select="concat( $uuid, ', ', position(), ', ', $recordRequest )" /-->
-
           <!-- build intermediate node -->
           <xsl:element name="node">
             <xsl:apply-templates select="document($recordRequest)/mcp:MD_Metadata"/>
@@ -589,52 +624,43 @@
       </xsl:for-each>
     </xsl:variable>
 
-    <!-- change name node to record ??? -->
-
-    <!-- test output some standard fields
-      factor into an output
-    -->
-    <!-- 
-    <xsl:for-each select="$processedNodes/node" >
-      <xsl:text>&#xa;</xsl:text>
-      <xsl:value-of select="filename"/>
-      <xsl:text>, </xsl:text>
-      <xsl:value-of select="uuid"/>
-    </xsl:for-each>
-    -->
-
-    <!-- node with common values --> 
+    <!-- node with common values -->
     <xsl:variable name="detail">
       <xsl:element name="imosLogoUrl"> <xsl:value-of select="$imosLogoUrl"/> </xsl:element>
-      <xsl:element name="emiiInfoUrl"> <xsl:value-of select="$emiiInfoUrl"/> </xsl:element> 
+      <xsl:element name="emiiInfoUrl"> <xsl:value-of select="$emiiInfoUrl"/> </xsl:element>
       <xsl:element name="emiiTermsUrl"> <xsl:value-of select="$emiiTermsUrl"/> </xsl:element>
       <xsl:element name="portalUrl"> <xsl:value-of select="$portalUrl"/> </xsl:element>
       <xsl:element name="gaScript"> <xsl:copy-of select="$gaScript"/> </xsl:element>
     </xsl:variable>
 
 
-    <!-- record views -->
+    <!-- record views, i.e. an HTML page per metadata record. -->
     <xsl:for-each select="$processedNodes/node" >
       <xsl:variable name="filename" select="filename"/>
       <xsl:result-document method="html" indent="yes" href="output/{ $filename}">
         <xsl:call-template name="record-view">
           <xsl:with-param name="node" select="." />
           <xsl:with-param name="detail" select="$detail" />
-          <!-- xsl:with-param name="detail" select="$detail"/ -->
         </xsl:call-template>
       </xsl:result-document>
     </xsl:for-each>
 
 
-    <!-- index view -->
+    <!-- HTML index view -->
     <xsl:result-document method="html" indent="yes" href="output/data_collections.html">
-      <xsl:call-template name="index-view">
+      <xsl:call-template name="html-index-view">
         <xsl:with-param name="processedNodes" select="$processedNodes"/>
         <xsl:with-param name="detail" select="$detail" />
+      </xsl:call-template>
+    </xsl:result-document>
+
+    <!-- XML sitemap -->
+    <xsl:result-document method="xml" indent="yes" href="output/sitemap_index.xml">
+      <xsl:call-template name="xml-sitemap-index-view">
+        <xsl:with-param name="processedNodes" select="$processedNodes"/>
       </xsl:call-template>
     </xsl:result-document>
 
   </xsl:template>
 
 </xsl:stylesheet>
-
