@@ -12,8 +12,8 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
 >
 
   <!-- Configuration -->
-  <xsl:variable name="maxRecords"           select="1000"/> <!-- Useful to limit when testing. Careful, includes register records -->
-
+  <xsl:variable name="maxRecords"
+                select="10"/> <!-- Useful to limit when testing. Careful, includes register records -->
   <xsl:variable name="geonetworkBaseUrl"
                 select="'https://catalogue-123.aodn.org.au'"/>
   <xsl:variable name="portalDataBaseUrl"
