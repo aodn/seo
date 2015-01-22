@@ -28,7 +28,7 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
   <xsl:variable name="portalUrl"
                 select="'https://imos.aodn.org.au/imos123'"/>
   <xsl:variable name="portalSearchIndexBaseUrl"
-                select="'https://imos.aodn.org.au'"/>
+                select="'https://imos.aodn.org.au/data_collections'"/>
 
   <xsl:variable name="gaScript">
     <script>
