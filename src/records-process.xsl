@@ -655,7 +655,7 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
     </xsl:result-document>
 
     <!-- XML sitemap -->
-    <xsl:result-document method="xml" indent="yes" href="output/sitemap_index.xml">
+    <xsl:result-document method="xml" indent="yes" href="output/sitemap.xml">
       <xsl:call-template name="xml-sitemap-index-view">
         <xsl:with-param name="processedNodes" select="$processedNodes"/>
       </xsl:call-template>
