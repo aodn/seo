@@ -296,9 +296,11 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
 
     <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
+      <xsl:variable name="currentDateTime" select="current-dateTime()"/>
+
       <url>
         <loc><xsl:value-of select="concat($portalSearchIndexBaseUrl, '/', 'data_collections.html')"/></loc>
-        <lastmod><xsl:value-of select="current-dateTime()"/></lastmod>
+        <lastmod><xsl:value-of select="format-dateTime($currentDateTime, '[Y0001]-[M01]-[D01]')"/></lastmod>
         <changefreq>daily</changefreq>
       </url>
 
@@ -309,7 +311,7 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
 
         <url>
           <loc><xsl:value-of select="concat($portalSearchIndexBaseUrl, '/', $filename)"/></loc>
-          <lastmod><xsl:value-of select="$changeDate"/></lastmod>
+          <lastmod><xsl:value-of select="format-dateTime($changeDate, '[Y0001]-[M01]-[D01]')"/></lastmod>
           <changefreq>daily</changefreq>
         </url>
 
