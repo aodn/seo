@@ -20,7 +20,7 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
                 select="'https://imos.aodn.org.au/imos123/home'"/>
 
   <xsl:variable name="imosLogoUrl"
-                select="'http://static.emii.org.au/images/logo/IMOS-Ocean-Portal-logo.png'"/>
+                select="'https://static.emii.org.au/images/logo/IMOS-Ocean-Portal-logo.png'"/>
   <xsl:variable name="emiiInfoUrl"
                 select="'mailt:info@emii.org.au'"/>
   <xsl:variable name="emiiTermsUrl"
