@@ -565,6 +565,9 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
       <xsl:text>.html</xsl:text>
     </xsl:variable>
 
+    <xsl:variable name="filename">
+      <xsl:value-of select="replace($filename, '/', '')"/>
+    </xsl:variable>
 
     <xsl:variable name="portalDataUrl">
       <xsl:value-of select="$portalDataBaseUrl"/>
