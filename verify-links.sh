@@ -6,7 +6,7 @@
 # grep -v " 200$" output_file | cut -d' ' -f1
 #
 
-declare -r BASE_URL="https://imos.aodn.org.au"
+declare -r BASE_URL="https://portal.aodn.org.au"
 
 # main
 main() {
