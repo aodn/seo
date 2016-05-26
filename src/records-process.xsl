@@ -15,9 +15,9 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
   <xsl:variable name="maxRecords"
                 select="1000"/> <!-- Useful to limit when testing. Careful, includes register records -->
   <xsl:variable name="geonetworkBaseUrl"
-                select="'https://catalogue-imos.aodn.org.au'"/>
+                select="'https://catalogue-portal.aodn.org.au'"/>
   <xsl:variable name="portalDataBaseUrl"
-                select="'https://imos.aodn.org.au/imos123/home'"/>
+                select="'https://portal.aodn.org.au'"/>
 
   <xsl:variable name="imosLogoUrl"
                 select="'https://static.emii.org.au/images/logo/IMOS-Ocean-Portal-logo.png'"/>
@@ -26,9 +26,9 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
   <xsl:variable name="emiiTermsUrl"
                 select="'http://imos.org.au/imostermsofuse0.html'"/>
   <xsl:variable name="portalUrl"
-                select="'https://imos.aodn.org.au/imos123'"/>
+                select="'https://portal.aodn.org.au'"/>
   <xsl:variable name="portalSearchIndexBaseUrl"
-                select="'https://imos.aodn.org.au'"/>
+                select="'https://portal.aodn.org.au'"/>
 
   <xsl:variable name="gaScript">
     <script>
