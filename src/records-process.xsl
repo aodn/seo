@@ -17,7 +17,7 @@ exclude-result-prefixes="xsl mcp gco gmd gmx geonet"
   <xsl:variable name="geonetworkBaseUrl"
                 select="'https://catalogue-portal.aodn.org.au'"/>
   <xsl:variable name="portalDataBaseUrl"
-                select="'https://portal.aodn.org.au'"/>
+                select="'https://portal.aodn.org.au/search'"/>
 
   <xsl:variable name="imosLogoUrl"
                 select="'https://static.emii.org.au/images/logo/IMOS-Ocean-Portal-logo.png'"/>
